@@ -10,28 +10,64 @@ import MapKit
 
 struct MapButtons: View {
     @EnvironmentObject var vm: ViewModel
+    @State var showInfoView = false
     
     var body: some View {
-        VStack(spacing: 0) {
-            Button {
-                updateMapType()
-            } label: {
-                Image(systemName: mapTypeImage)
-                    .squareButton()
-                    .rotation3DEffect(.degrees(vm.mapType == .standard ? 0 : 180), axis: (x: 0, y: 1, z: 0))
-                    .rotation3DEffect(.degrees(vm.degrees), axis: (x: 0, y: 1, z: 0))
+        VStack(spacing: 10) {
+            VStack(spacing: 0) {
+                Button {
+                    updateMapType()
+                } label: {
+                    Image(systemName: mapTypeImage)
+                        .squareButton()
+                        .rotation3DEffect(.degrees(vm.mapType == .standard ? 0 : 180), axis: (x: 0, y: 1, z: 0))
+                        .rotation3DEffect(.degrees(vm.degrees), axis: (x: 0, y: 1, z: 0))
+                }
+                
+                Divider().frame(width: SIZE)
+                Button {
+                    updateTrackingMode()
+                } label: {
+                    Image(systemName: trackingModeImage)
+                        .scaleEffect(vm.scale)
+                        .squareButton()
+                }
             }
+            .blurBackground()
             
-            Divider().frame(width: SIZE)
-            Button {
-                updateTrackingMode()
-            } label: {
-                Image(systemName: trackingModeImage)
-                    .scaleEffect(vm.scale)
-                    .squareButton()
+            VStack(spacing: 0) {
+                Button {
+                    showInfoView = true
+                } label: {
+                    Image(systemName: "info.circle")
+                        .squareButton()
+                }
+                
+                if Set(vm.places.map(\.type)).count == PlaceType.allCases.count {
+                    Divider().frame(width: SIZE)
+                    Menu {
+                        Picker("", selection: $vm.selectedPlaceType) {
+                            Text("All Pins")
+                                .tag(nil as PlaceType?)
+                            ForEach(PlaceType.allCases, id: \.self) { type in
+                                Label {
+                                    Text(type.name)
+                                } icon: {
+                                    Image(systemName: "circle.fill", fontSize: 20, tint: type.color)
+                                }
+                                .tag(type as PlaceType?)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "line.3.horizontal.decrease.circle\(vm.selectedPlaceType == nil ? "" : ".fill")")
+                            .squareButton()
+                    }
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
             }
+            .blurBackground()
         }
-        .blurBackground()
+        .animation(.default, value: vm.places)
         .padding(10)
         .alert("Access Denied", isPresented: $vm.showAuthError) {
             Button("Maybe Later") {}
@@ -40,6 +76,9 @@ struct MapButtons: View {
             }
         } message: {
             Text("\(NAME) needs access to your location to show where you are on the map. Please go to Settings > \(NAME) > Location and allow access while using the app.")
+        }
+        .sheet(isPresented: $showInfoView) {
+            InfoView(welcome: false)
         }
     }
     
@@ -54,7 +93,7 @@ struct MapButtons: View {
                 return .none
             }
         }
-        vm.updateTrackingMode(mode)
+        vm.setTrackingMode(mode)
     }
     
     func updateMapType() {
@@ -66,7 +105,7 @@ struct MapButtons: View {
                 return .standard
             }
         }
-        vm.updateMapType(type)
+        vm.setMapType(type)
     }
     
     var trackingModeImage: String {

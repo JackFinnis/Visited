@@ -29,6 +29,9 @@
 		04C71FDC2A0701C400417249 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C71FDB2A0701C400417249 /* Haptics.swift */; };
 		04C71FDE2A0701CF00417249 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C71FDD2A0701CF00417249 /* Store.swift */; };
 		04C71FE02A07076000417249 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C71FDF2A07076000417249 /* String.swift */; };
+		04C71FE22A07154400417249 /* CLLocationCoordinate2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C71FE12A07154400417249 /* CLLocationCoordinate2D.swift */; };
+		04C71FE52A07187400417249 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C71FE42A07187400417249 /* Collection.swift */; };
+		04C71FE72A071ACB00417249 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C71FE62A071ACB00417249 /* Image.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +58,10 @@
 		04C71FDB2A0701C400417249 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		04C71FDD2A0701CF00417249 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		04C71FDF2A07076000417249 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		04C71FE12A07154400417249 /* CLLocationCoordinate2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocationCoordinate2D.swift; sourceTree = "<group>"; };
+		04C71FE32A0717BF00417249 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		04C71FE42A07187400417249 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
+		04C71FE62A071ACB00417249 /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +94,7 @@
 		04C71FA02A06F37800417249 /* Visited */ = {
 			isa = PBXGroup;
 			children = (
+				04C71FE32A0717BF00417249 /* Info.plist */,
 				04C71FA12A06F37800417249 /* VisitedApp.swift */,
 				04C71FBE2A06F85E00417249 /* Views */,
 				04C71FBD2A06F85400417249 /* Models */,
@@ -131,6 +139,9 @@
 		04C71FBF2A06F86500417249 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				04C71FE12A07154400417249 /* CLLocationCoordinate2D.swift */,
+				04C71FE42A07187400417249 /* Collection.swift */,
+				04C71FE62A071ACB00417249 /* Image.swift */,
 				04C71FC12A06F87700417249 /* NSObject.swift */,
 				04C71FDF2A07076000417249 /* String.swift */,
 			);
@@ -231,8 +242,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				04C71FB72A06F60100417249 /* Visited.xcdatamodeld in Sources */,
+				04C71FE72A071ACB00417249 /* Image.swift in Sources */,
 				04C71FC72A06FDA900417249 /* DraggableTitle.swift in Sources */,
 				04C71FCB2A06FDCB00417249 /* ShareView.swift in Sources */,
+				04C71FE22A07154400417249 /* CLLocationCoordinate2D.swift in Sources */,
 				04C71FB92A06F82600417249 /* MapView.swift in Sources */,
 				04C71FC92A06FDBB00417249 /* DismissCross.swift in Sources */,
 				04C71FCF2A06FE4200417249 /* InfoView.swift in Sources */,
@@ -248,6 +261,7 @@
 				04C71FDE2A0701CF00417249 /* Store.swift in Sources */,
 				04C71FD12A06FE7B00417249 /* View.swift in Sources */,
 				04C71FDC2A0701C400417249 /* Haptics.swift in Sources */,
+				04C71FE52A07187400417249 /* Collection.swift in Sources */,
 				04C71FE02A07076000417249 /* String.swift in Sources */,
 				04C71FD82A0701A900417249 /* Storage.swift in Sources */,
 				04C71FB42A06F3BF00417249 /* Place.swift in Sources */,
@@ -382,7 +396,8 @@
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = Visited/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is shown on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -411,7 +426,8 @@
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = Visited/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is shown on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";

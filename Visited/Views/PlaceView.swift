@@ -17,16 +17,19 @@ struct PlaceView: View {
     @FocusState var focused: Bool
     
     var new: Bool { vm.selectedPlace == nil }
+    var valid: Bool { name.trimmed.isNotEmpty }
     
     var body: some View {
         NavigationView {
             Form {
                 Section {} header: {
                     ZStack {
-                        Map(coordinateRegion: $region)
-                        Image(systemName: "xmark")
-                            .foregroundColor(.primary)
-                            .font(.title2)
+                        Map(coordinateRegion: $region, showsUserLocation: true)
+                        Image(systemName: "circle.fill")
+                            .foregroundColor(type.color)
+                            .font(.title3)
+                            .addShadow()
+                            .allowsHitTesting(false)
                     }
                     .aspectRatio(1, contentMode: .fit)
                     .continuousRadius(10)
@@ -35,6 +38,7 @@ struct PlaceView: View {
                 Section {
                     TextField("Name", text: $name)
                         .focused($focused)
+                        .submitLabel(.done)
                 } header: {
                     Picker("", selection: $type) {
                         ForEach(PlaceType.allCases, id: \.self) { type in
@@ -45,15 +49,40 @@ struct PlaceView: View {
                     .textCase(nil)
                     .padding(.bottom, 10)
                 }
+                
+                if let place = vm.selectedPlace {
+                    Section {
+                        Button("Delete") {
+                            vm.deletePlace(place)
+                            dismiss()
+                        }
+                        .foregroundColor(.red)
+                        .horizontallyCentred()
+                    }
+                }
             }
             .onAppear {
                 type = vm.selectedPlace?.type ?? type
                 name = vm.selectedPlace?.name ?? name
                 region.center = vm.selectedPlace?.coordinate ?? vm.selectedCoord ?? vm.mapView?.centerCoordinate ?? .init()
+                let spanDelta = 0.002
+                region.span.latitudeDelta = spanDelta
+                region.span.longitudeDelta = spanDelta
             }
             .navigationTitle(new ? "New Pin" : "Edit Pin")
             .navigationBarTitleDisplayMode(.inline)
             .animation(.default, value: focused)
+            .safeAreaInset(edge: .bottom) {
+                if new && !focused {
+                    Button(action: savePin) {
+                        Text("Add Pin")
+                            .bigButton()
+                    }
+                    .padding()
+                    .disabled(!valid)
+                    .textCase(nil)
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -61,11 +90,11 @@ struct PlaceView: View {
                     }
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button(action: savePin) {
-                        Text(new ? "Add" : "Save")
-                            .bold()
+                    if !new {
+                        Button("Save", action: savePin)
+                            .font(.body.bold())
+                            .disabled(!valid)
                     }
-                    .disabled(name.trimmed.isEmpty)
                 }
             }
         }

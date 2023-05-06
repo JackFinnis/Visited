@@ -20,7 +20,7 @@ class Place: NSManagedObject {
 extension Place: MKAnnotation {
     var coordinate: CLLocationCoordinate2D { CLLocationCoordinate2DMake(lat, long) }
     var title: String? { name }
-    var subtitle: String? { nil }
+    var subtitle: String? { type.name }
 }
 
 @objc

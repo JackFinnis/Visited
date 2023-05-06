@@ -10,6 +10,7 @@ import SwiftUI
 struct RootView: View {
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
+    @State var showWelcomeView = false
 
     var body: some View {
         ZStack(alignment: .trailing) {
@@ -44,15 +45,15 @@ struct RootView: View {
         .task {
             if !launchedBefore {
                 launchedBefore = true
-                vm.welcome = true
-                vm.showInfoView = true
+                showWelcomeView = true
             }
         }
-        .sheet(isPresented: $vm.showInfoView) {
-            InfoView(welcome: vm.welcome)
+        .sheet(isPresented: $showWelcomeView) {
+            InfoView(welcome: true)
         }
         .sheet(isPresented: $vm.showPlaceView, onDismiss: {
             vm.selectedPlace = nil
+            vm.selectedCoord = nil
         }) {
             PlaceView()
         }

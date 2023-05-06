@@ -14,14 +14,16 @@ class ViewModel: NSObject, ObservableObject {
     static let shared = ViewModel()
     
     // MARK: - Properties
-    var places = [Place]()
+    @Published var places = [Place]()
     
     // State
     @Published var selectedPlace: Place?
     @Published var selectedCoord: CLLocationCoordinate2D?
     @Published var showPlaceView = false
-    @Published var showInfoView = false
-    @Published var welcome = false
+    @Published var selectedPlaceType: PlaceType? { didSet {
+        mapView?.removeAnnotations(places)
+        mapView?.addAnnotations(places.filter { selectedPlaceType == nil || $0.type == selectedPlaceType })
+    }}
     
     // Animations
     @Published var degrees = 0.0
@@ -46,21 +48,18 @@ class ViewModel: NSObject, ObservableObject {
     // MARK: - Initialiser
     override init() {
         super.init()
-        // Load Core Data
-        container.loadPersistentStores { description, error in
-            self.loadPlaces()
-        }
+        manager.delegate = self
+        loadPlaces()
     }
     
     func loadPlaces() {
-        places = (try? container.viewContext.fetch(Place.fetchRequest()) as? [Place]) ?? []
-        mapView?.addAnnotations(places)
-        let coords = places.map(\.coordinate)
-        setRect(MKPolyline(coordinates: coords, count: coords.count).boundingMapRect)
+        container.loadPersistentStores { description, error in
+            self.places = (try? self.container.viewContext.fetch(Place.fetchRequest()) as? [Place]) ?? []
+        }
     }
     
     // MARK: - Methods
-    func updateTrackingMode(_ newMode: MKUserTrackingMode) {
+    func setTrackingMode(_ newMode: MKUserTrackingMode) {
         guard validateAuth() else { return }
         mapView?.setUserTrackingMode(newMode, animated: true)
         if trackingMode == .followWithHeading || newMode == .followWithHeading {
@@ -78,7 +77,7 @@ class ViewModel: NSObject, ObservableObject {
         }
     }
     
-    func updateMapType(_ newType: MKMapType) {
+    func setMapType(_ newType: MKMapType) {
         mapView?.mapType = newType
         withAnimation(.easeInOut(duration: 0.25)) {
             degrees += 90
@@ -102,6 +101,13 @@ class ViewModel: NSObject, ObservableObject {
             UIApplication.shared.open(url)
         }
     }
+    
+    func deletePlace(_ place: Place) {
+        mapView?.removeAnnotation(place)
+        places.removeAll { $0.coordinate == place.coordinate }
+        container.viewContext.delete(place)
+        save()
+    }
 }
 
 extension ViewModel: MKMapViewDelegate {
@@ -116,9 +122,8 @@ extension ViewModel: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let place = annotation as? Place else { return nil }
-        let editButton = getButton(systemName: "pencil")
-        let pin = mapView.dequeueReusableAnnotationView(withIdentifier: MKPinAnnotationView.id, for: annotation) as? MKPinAnnotationView
-        pin?.rightCalloutAccessoryView = editButton
+        let pin = mapView.dequeueReusableAnnotationView(withIdentifier: MKPinAnnotationView.id, for: place) as? MKPinAnnotationView
+        pin?.rightCalloutAccessoryView = getButton(systemName: "pencil")
         pin?.pinTintColor = UIColor(place.type.color)
         pin?.displayPriority = .required
         pin?.animatesDrop = true
@@ -133,21 +138,22 @@ extension ViewModel: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
         if !animated {
-            updateTrackingMode(.none)
+            setTrackingMode(.none)
         }
     }
     
     @objc
     func tappedCompass() {
         guard trackingMode == .followWithHeading else { return }
-        updateTrackingMode(.follow)
+        setTrackingMode(.follow)
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if let place = view.annotation as? Place {
             selectedPlace = place
             showPlaceView = true
-        } else if view.annotation is MKUserLocation {
+        } else if let user = view.annotation as? MKUserLocation {
+            selectedCoord = user.coordinate
             showPlaceView = true
         }
     }

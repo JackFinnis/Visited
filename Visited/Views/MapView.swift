@@ -12,6 +12,7 @@ class _MKMapView: MKMapView {
     override func layoutSubviews() {
         super.layoutSubviews()
         if let compass = subviews.first(where: { type(of: $0).id == "MKCompassView" }) {
+            compass.center = compass.center.applying(.init(translationX: -5, y: SIZE*4 + 25))
             if (compass.gestureRecognizers?.count ?? 0) < 2 {
                 let tap = UITapGestureRecognizer(target: ViewModel.shared, action: #selector(ViewModel.tappedCompass))
                 tap.delegate = ViewModel.shared
@@ -29,10 +30,17 @@ struct MapView: UIViewRepresentable {
         mapView.delegate = vm
         vm.mapView = mapView
         
+        mapView.addAnnotations(vm.places)
+        let coords = vm.places.map(\.coordinate)
+        if coords.isNotEmpty {
+            vm.setRect(MKPolyline(coordinates: coords, count: coords.count).boundingMapRect)
+        }
+        
         mapView.showsUserLocation = true
         mapView.showsScale = true
         mapView.showsCompass = true
         mapView.isPitchEnabled = false
+        mapView.userTrackingMode = .none
         
         mapView.register(MKPinAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKPinAnnotationView.id)
         
