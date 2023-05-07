@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RootView: View {
+    @Environment(\.colorScheme) var colorScheme
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
     @State var showWelcomeView = false
@@ -19,6 +20,7 @@ struct RootView: View {
             
             VStack(spacing: 0) {
                 CarbonCopy()
+                    .id(colorScheme)
                     .blur(radius: 10, opaque: true)
                     .ignoresSafeArea()
                 Spacer()

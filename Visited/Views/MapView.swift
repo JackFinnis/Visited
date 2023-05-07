@@ -31,10 +31,7 @@ struct MapView: UIViewRepresentable {
         vm.mapView = mapView
         
         mapView.addAnnotations(vm.places)
-        let coords = vm.places.map(\.coordinate)
-        if coords.isNotEmpty {
-            vm.setRect(MKPolyline(coordinates: coords, count: coords.count).boundingMapRect)
-        }
+        vm.zoomTo(vm.places)
         
         mapView.showsUserLocation = true
         mapView.showsScale = true

@@ -22,7 +22,9 @@ class ViewModel: NSObject, ObservableObject {
     @Published var showPlaceView = false
     @Published var selectedPlaceType: PlaceType? { didSet {
         mapView?.removeAnnotations(places)
-        mapView?.addAnnotations(places.filter { selectedPlaceType == nil || $0.type == selectedPlaceType })
+        let filtered = places.filter { selectedPlaceType == nil || $0.type == selectedPlaceType }
+        mapView?.addAnnotations(filtered)
+        zoomTo(filtered)
     }}
     
     // Animations
@@ -87,6 +89,13 @@ class ViewModel: NSObject, ObservableObject {
             withAnimation(.easeInOut(duration: 0.25)) {
                 self.degrees += 90
             }
+        }
+    }
+    
+    func zoomTo(_ places: [Place]) {
+        let coords = places.map(\.coordinate)
+        if coords.isNotEmpty {
+            setRect(MKPolyline(coordinates: coords, count: coords.count).boundingMapRect)
         }
     }
     

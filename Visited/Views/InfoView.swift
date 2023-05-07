@@ -33,7 +33,9 @@ struct InfoView: View {
                 .padding(.bottom, 30)
                 
                 VStack(alignment: .leading, spacing: 20) {
-                    InfoRow(systemName: "mappin", title: "Store Your Places", description: "Keep track of all the places you have been and want to go!")
+                    InfoRow(systemName: "globe.europe.africa.fill", title: "Store Your Places", description: "Keep track of all the places you have visited and want to visit!")
+                    InfoRow(systemName: "hand.tap", title: "Add Places Easily", description: "Hold down on the map to add a new place.")
+                    InfoRow(systemName: "line.3.horizontal.decrease.circle", title: "Filter Your Places", description: "Filter places you have visited and those on your wishlist.")
                 }
                 
                 Spacer()
