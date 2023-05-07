@@ -58,5 +58,6 @@ struct RootView: View {
             PlaceView()
         }
         .environmentObject(vm)
+        .navigationViewStyle(.stack)
     }
 }

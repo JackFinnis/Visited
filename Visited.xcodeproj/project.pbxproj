@@ -32,6 +32,7 @@
 		04C71FE22A07154400417249 /* CLLocationCoordinate2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C71FE12A07154400417249 /* CLLocationCoordinate2D.swift */; };
 		04C71FE52A07187400417249 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C71FE42A07187400417249 /* Collection.swift */; };
 		04C71FE72A071ACB00417249 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C71FE62A071ACB00417249 /* Image.swift */; };
+		04C71FE92A0725DF00417249 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04C71FE82A0725DF00417249 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,9 +60,9 @@
 		04C71FDD2A0701CF00417249 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		04C71FDF2A07076000417249 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		04C71FE12A07154400417249 /* CLLocationCoordinate2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocationCoordinate2D.swift; sourceTree = "<group>"; };
-		04C71FE32A0717BF00417249 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		04C71FE42A07187400417249 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		04C71FE62A071ACB00417249 /* Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
+		04C71FE82A0725DF00417249 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,7 +95,6 @@
 		04C71FA02A06F37800417249 /* Visited */ = {
 			isa = PBXGroup;
 			children = (
-				04C71FE32A0717BF00417249 /* Info.plist */,
 				04C71FA12A06F37800417249 /* VisitedApp.swift */,
 				04C71FBE2A06F85E00417249 /* Views */,
 				04C71FBD2A06F85400417249 /* Models */,
@@ -110,6 +110,7 @@
 			children = (
 				04C71FB52A06F60100417249 /* Visited.xcdatamodeld */,
 				04C71FA52A06F37900417249 /* Assets.xcassets */,
+				04C71FE82A0725DF00417249 /* Launch Screen.storyboard */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -230,6 +231,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04C71FE92A0725DF00417249 /* Launch Screen.storyboard in Resources */,
 				04C71FA62A06F37900417249 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -396,7 +398,8 @@
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Visited/Info.plist;
+				INFOPLIST_FILE = "";
+				INFOPLIST_KEY_CFBundleDisplayName = "My Pins";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is shown on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -426,7 +429,8 @@
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Visited/Info.plist;
+				INFOPLIST_FILE = "";
+				INFOPLIST_KEY_CFBundleDisplayName = "My Pins";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is shown on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
