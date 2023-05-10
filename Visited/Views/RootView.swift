@@ -53,10 +53,7 @@ struct RootView: View {
         .sheet(isPresented: $showWelcomeView) {
             InfoView(welcome: true)
         }
-        .sheet(isPresented: $vm.showPlaceView, onDismiss: {
-            vm.selectedPlace = nil
-            vm.selectedCoord = nil
-        }) {
+        .sheet(isPresented: $vm.showPlaceView) {
             PlaceView()
         }
         .environmentObject(vm)

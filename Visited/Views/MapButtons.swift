@@ -47,7 +47,7 @@ struct MapButtons: View {
                     Divider().frame(width: SIZE)
                     Menu {
                         Picker("", selection: $vm.selectedPlaceType) {
-                            Text("All Pins")
+                            Text("All Places")
                                 .tag(nil as PlaceType?)
                             ForEach(PlaceType.allCases, id: \.self) { type in
                                 Label {

@@ -117,6 +117,13 @@ class ViewModel: NSObject, ObservableObject {
         container.viewContext.delete(place)
         save()
     }
+    
+    func reverseGeocode(coord: CLLocationCoordinate2D, completion: @escaping (CLPlacemark) -> Void) {
+        CLGeocoder().reverseGeocodeLocation(coord.location) { placemarks, error in
+            guard let placemark = placemarks?.first else { return }
+            completion(placemark)
+        }
+    }
 }
 
 extension ViewModel: MKMapViewDelegate {
