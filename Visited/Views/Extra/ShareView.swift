@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ShareView: UIViewControllerRepresentable {
-    let url: URL
+    let items: [Any]
     let completion: (Bool) -> Void
     
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        let vc = UIActivityViewController(activityItems: items, applicationActivities: nil)
         vc.completionWithItemsHandler = { activity, completed, items, error in
             completion(completed)
         }
@@ -23,22 +23,22 @@ struct ShareView: UIViewControllerRepresentable {
 }
 
 extension View {
-    func shareSheet(url: URL, showsSharedAlert: Bool = false, isPresented: Binding<Bool>) -> some View {
-        modifier(ShareModifier(url: url, showsSharedAlert: showsSharedAlert, isPresented: isPresented))
+    func shareSheet(items: [Any], showsSharedAlert: Bool = false, isPresented: Binding<Bool>) -> some View {
+        modifier(ShareModifier(items: items, showsSharedAlert: showsSharedAlert, isPresented: isPresented))
     }
 }
 
 struct ShareModifier: ViewModifier {
     @State var showSharedAlert = false
     
-    let url: URL
+    let items: [Any]
     let showsSharedAlert: Bool
     @Binding var isPresented: Bool
     
     func body(content: Content) -> some View {
         content
             .popover(isPresented: $isPresented) {
-                let view = ShareView(url: url) { shared in
+                let view = ShareView(items: items) { shared in
                     showSharedAlert = showsSharedAlert && shared
                 }
                 .ignoresSafeArea()
@@ -48,7 +48,7 @@ struct ShareModifier: ViewModifier {
                     view
                 }
             }
-            .alert("Thanks for sharing \(NAME)!", isPresented: $showSharedAlert) {
+            .alert("Thanks for sharing \(Constants.name)!", isPresented: $showSharedAlert) {
                 Button("OK", role: .cancel) {}
             }
     }

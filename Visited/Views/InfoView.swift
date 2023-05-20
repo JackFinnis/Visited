@@ -25,7 +25,7 @@ struct InfoView: View {
                         .frame(width: 70, height: 70)
                         .continuousRadius(15)
                         .shadow(color: .black.opacity(0.2), radius: 5)
-                    Text(NAME)
+                    Text(Constants.name)
                         .font(.largeTitle.bold())
                         .multilineTextAlignment(.center)
                 }
@@ -54,7 +54,7 @@ struct InfoView: View {
                             } label: {
                                 Label("Send us Feedback", systemImage: "envelope")
                             }
-                        } else if let url = Emails.mailtoUrl(subject: "\(NAME) Feedback"), UIApplication.shared.canOpenURL(url) {
+                        } else if let url = Emails.mailtoUrl(subject: "\(Constants.name) Feedback"), UIApplication.shared.canOpenURL(url) {
                             Button {
                                 UIApplication.shared.open(url)
                             } label: {
@@ -69,12 +69,12 @@ struct InfoView: View {
                         Button {
                             Store.requestRating()
                         } label: {
-                            Label("Rate \(NAME)", systemImage: "star")
+                            Label("Rate \(Constants.name)", systemImage: "star")
                         }
                         Button {
                             showShareSheet.toggle()
                         } label: {
-                            Label("Share with a Friend", systemImage: "person.badge.plus")
+                            Label("Share \(Constants.name)", systemImage: "square.and.arrow.up")
                         }
                     } label: {
                         Text("Contribute...")
@@ -105,8 +105,8 @@ struct InfoView: View {
                 }
             }
         }
-        .shareSheet(url: APP_URL, showsSharedAlert: true, isPresented: $showShareSheet)
-        .emailSheet(recipient: EMAIL, subject: "\(NAME) Feedback", isPresented: $showEmailSheet)
+        .shareSheet(items: [Constants.appUrl], showsSharedAlert: true, isPresented: $showShareSheet)
+        .emailSheet(recipient: Constants.email, subject: "\(Constants.name) Feedback", isPresented: $showEmailSheet)
     }
 }
 

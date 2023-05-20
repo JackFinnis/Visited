@@ -31,6 +31,12 @@ class ViewModel: NSObject, ObservableObject {
     @Published var degrees = 0.0
     @Published var scale = 1.0
     
+    // Share
+    @Published var showShareSheet = false
+    var shareItems = [Any]() { didSet {
+        showShareSheet = true
+    }}
+    
     // MapView
     var mapView: MKMapView?
     @Published var trackingMode = MKUserTrackingMode.none
@@ -129,17 +135,37 @@ class ViewModel: NSObject, ObservableObject {
 extension ViewModel: MKMapViewDelegate {
     func getButton(systemName: String) -> UIButton {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(font: .systemFont(ofSize: SIZE/2))
+        let config = UIImage.SymbolConfiguration(font: .systemFont(ofSize: Constants.size/2))
         let image = UIImage(systemName: systemName, withConfiguration: config)
         button.setImage(image, for: .normal)
-        button.frame.size = CGSize(width: SIZE, height: SIZE)
+        button.frame.size = CGSize(width: Constants.size, height: Constants.size)
         return button
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let place = annotation as? Place else { return nil }
         let pin = mapView.dequeueReusableAnnotationView(withIdentifier: MKPinAnnotationView.id, for: place) as? MKPinAnnotationView
-        pin?.rightCalloutAccessoryView = getButton(systemName: "pencil")
+        let options = getButton(systemName: "ellipsis.circle")
+        options.menu = UIMenu(children: [
+            UIAction(title: "Open in Maps", image: UIImage(systemName: "map")) { _ in
+                self.reverseGeocode(coord: place.coordinate) { placemark in
+                    let mapItem = MKMapItem(placemark: MKPlacemark(placemark: placemark))
+                    mapItem.name = place.name
+                    mapItem.openInMaps()
+                }
+            },
+            UIAction(title: "Edit Place", image: UIImage(systemName: "pencil")) { _ in
+                self.selectedPlace = place
+                self.showPlaceView = true
+            },
+            UIAction(title: "Share...", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                let coord = place.coordinate
+                guard let url = URL(string: "https://maps.apple.com/?ll=\(coord.latitude),\(coord.longitude)") else { return }
+                self.shareItems = [url]
+            }
+        ])
+        options.showsMenuAsPrimaryAction = true
+        pin?.rightCalloutAccessoryView = options
         pin?.pinTintColor = UIColor(place.type.color)
         pin?.displayPriority = .required
         pin?.animatesDrop = true
@@ -165,10 +191,7 @@ extension ViewModel: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        if let place = view.annotation as? Place {
-            selectedPlace = place
-            showPlaceView = true
-        } else if let user = view.annotation as? MKUserLocation {
+        if let user = view.annotation as? MKUserLocation {
             selectedCoord = user.coordinate
             showPlaceView = true
         }

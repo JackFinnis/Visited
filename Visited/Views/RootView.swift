@@ -58,5 +58,6 @@ struct RootView: View {
         }
         .environmentObject(vm)
         .navigationViewStyle(.stack)
+        .shareSheet(items: vm.shareItems, isPresented: $vm.showShareSheet)
     }
 }

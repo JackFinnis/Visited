@@ -21,8 +21,8 @@ extension View {
     }
     
     func squareButton() -> some View {
-        self.font(.system(size: SIZE/2))
-            .frame(width: SIZE, height: SIZE)
+        self.font(.system(size: Constants.size/2))
+            .frame(width: Constants.size, height: Constants.size)
     }
     
     func blurBackground() -> some View {
@@ -37,8 +37,7 @@ extension View {
     }
     
     func bigButton() -> some View {
-        self
-            .font(.body.bold())
+        self.font(.body.bold())
             .padding()
             .horizontallyCentred()
             .foregroundColor(.white)

@@ -14,7 +14,7 @@ struct PlaceView: View {
     @State var type = PlaceType.visited
     @State var name = ""
     @State var town: String?
-    @State var region = MKCoordinateRegion()
+    @State var coord = CLLocationCoordinate2D()
     @FocusState var focused: Bool
     
     var new: Bool { vm.selectedPlace == nil }
@@ -22,7 +22,7 @@ struct PlaceView: View {
     var edits: Bool {
         name != vm.selectedPlace?.name ?? "" ||
         type != vm.selectedPlace?.type ?? .visited ||
-        region.center != vm.selectedPlace?.coordinate ?? vm.selectedCoord ?? vm.mapView?.centerCoordinate
+        coord != vm.selectedPlace?.coordinate ?? vm.selectedCoord ?? vm.mapView?.centerCoordinate
     }
     
     var body: some View {
@@ -46,7 +46,7 @@ struct PlaceView: View {
                 } header: {
                     VStack(spacing: 20) {
                         ZStack {
-                            Map(coordinateRegion: $region, showsUserLocation: true)
+                            PlaceViewMap(centreCoord: $coord)
                             Image(systemName: "circle.fill")
                                 .foregroundColor(type.color)
                                 .font(.title3)
@@ -83,12 +83,9 @@ struct PlaceView: View {
             .onAppear {
                 type = vm.selectedPlace?.type ?? type
                 name = vm.selectedPlace?.name ?? name
-                region.center = vm.selectedPlace?.coordinate ?? vm.selectedCoord ?? vm.mapView?.centerCoordinate ?? .init()
-                let spanDelta = 0.002
-                region.span.latitudeDelta = spanDelta
-                region.span.longitudeDelta = spanDelta
+                coord = vm.selectedPlace?.coordinate ?? vm.selectedCoord ?? vm.mapView?.centerCoordinate ?? .init()
                 if new {
-                    vm.reverseGeocode(coord: region.center) { placemark in
+                    vm.reverseGeocode(coord: coord) { placemark in
                         town = placemark.subLocality ?? placemark.locality ?? ""
                     }
                 }
@@ -139,8 +136,8 @@ struct PlaceView: View {
         }
         place.name = name.isNotEmpty ? name : town ?? ""
         place.type = type
-        place.lat = region.center.latitude
-        place.long = region.center.longitude
+        place.lat = coord.latitude
+        place.long = coord.longitude
         vm.save()
         vm.mapView?.removeAnnotation(place)
         vm.mapView?.addAnnotation(place)
@@ -156,5 +153,42 @@ struct PlaceView_Previews: PreviewProvider {
                 PlaceView()
                     .environmentObject(ViewModel())
             }
+    }
+}
+
+struct PlaceViewMap: UIViewRepresentable {
+    @Binding var centreCoord: CLLocationCoordinate2D
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+    
+    func makeUIView(context: Context) -> MKMapView {
+        let mapView = MKMapView()
+        mapView.delegate = context.coordinator
+        
+        mapView.showsUserLocation = true
+        mapView.isPitchEnabled = false
+        mapView.isRotateEnabled = false
+        
+        let spanDelta = 0.002
+        let span = MKCoordinateSpan(latitudeDelta: spanDelta, longitudeDelta: spanDelta)
+        mapView.region = MKCoordinateRegion(center: centreCoord, span: span)
+        
+        return mapView
+    }
+    
+    func updateUIView(_ mapView: MKMapView, context: Context) {}
+    
+    class Coordinator: NSObject, MKMapViewDelegate {
+        let parent: PlaceViewMap
+        
+        init(parent: PlaceViewMap) {
+            self.parent = parent
+        }
+        
+        func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+            parent.centreCoord = mapView.centerCoordinate
+        }
     }
 }

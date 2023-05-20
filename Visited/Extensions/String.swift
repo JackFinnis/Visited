@@ -8,8 +8,8 @@
 import Foundation
 
 extension String {
-    var replaceSpaces: String {
-        replacingOccurrences(of: " ", with: "%20")
+    var urlEncoded: String? {
+        addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     }
     
     var trimmed: String {

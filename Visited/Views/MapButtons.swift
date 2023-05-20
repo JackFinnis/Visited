@@ -24,7 +24,7 @@ struct MapButtons: View {
                         .rotation3DEffect(.degrees(vm.degrees), axis: (x: 0, y: 1, z: 0))
                 }
                 
-                Divider().frame(width: SIZE)
+                Divider().frame(width: Constants.size)
                 Button {
                     updateTrackingMode()
                 } label: {
@@ -44,7 +44,7 @@ struct MapButtons: View {
                 }
                 
                 if Set(vm.places.map(\.type)).count == PlaceType.allCases.count {
-                    Divider().frame(width: SIZE)
+                    Divider().frame(width: Constants.size)
                     Menu {
                         Picker("", selection: $vm.selectedPlaceType) {
                             Text("All Places")
@@ -75,7 +75,7 @@ struct MapButtons: View {
                 vm.openSettings()
             }
         } message: {
-            Text("\(NAME) needs access to your location to show where you are on the map. Please go to Settings > \(NAME) > Location and allow access while using the app.")
+            Text("\(Constants.name) needs access to your location to show where you are on the map. Please go to Settings > \(Constants.name) > Location and allow access while using the app.")
         }
         .sheet(isPresented: $showInfoView) {
             InfoView(welcome: false)
