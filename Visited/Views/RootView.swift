@@ -8,56 +8,94 @@
 import SwiftUI
 
 struct RootView: View {
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.scenePhase) var scenePhase
     @AppStorage("launchedBefore") var launchedBefore = false
     @StateObject var vm = ViewModel.shared
     @State var showWelcomeView = false
+    @State var showInfoView = false
 
     var body: some View {
-        ZStack(alignment: .trailing) {
-            MapView()
-                .ignoresSafeArea()
+        ZStack {
+            GeometryReader { geo in
+                let disabled = vm.isMapDisabled(geo.size)
+                MapView()
+                    .disabled(disabled)
+                Color.black.opacity(disabled ? 0.15 : 0)
+            }
+            .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 CarbonCopy()
-                    .id(colorScheme)
+                    .id(scenePhase)
                     .blur(radius: 10, opaque: true)
                     .ignoresSafeArea()
                 Spacer()
                     .layoutPriority(1)
             }
             
-            VStack(alignment: .trailing) {
-                MapButtons()
-                Spacer()
-                Button {
-                    vm.showPlaceView = true
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.title2.weight(.semibold))
-                        .foregroundColor(.white)
-                        .frame(width: 50, height: 50)
-                        .background(Color.accentColor)
-                        .clipShape(Circle())
-                        .addShadow()
+            GeometryReader { geo in
+                VStack {
+                    HStack {
+                        Spacer()
+                        if !vm.isMapDisabled(geo.size) {
+                            MapButtons()
+                        }
+                    }
+                    Spacer()
                 }
-                .padding()
             }
+            
+            Sheet {
+                if vm.isSearching && vm.searchScope == .Maps {
+                    SearchView()
+                } else {
+                    PlacesView()
+                }
+            } header: {
+                HStack {
+                    SearchBar()
+                        .padding(.vertical, -10)
+                        .padding(.horizontal, -8)
+                    
+                    if !vm.isSearching {
+                        Button {
+                            showInfoView = true
+                        } label: {
+                            Image(systemName: "info.circle")
+                                .font(.icon)
+                        }
+                        .sheet(isPresented: $showInfoView) {
+                            InfoView(welcome: false)
+                        }
+                    }
+                }
+                .animation(.none, value: vm.isSearching)
+            }
+            .animation(.sheet, value: vm.isSearching)
         }
         .task {
             if !launchedBefore {
                 launchedBefore = true
                 showWelcomeView = true
+            } else if vm.authStatus == .notDetermined {
+                vm.requestLocationAuthorization()
             }
         }
-        .sheet(isPresented: $showWelcomeView) {
-            InfoView(welcome: true)
-        }
-        .sheet(isPresented: $vm.showPlaceView) {
-            PlaceView()
+        .background {
+            Text("")
+                .sheet(isPresented: $showWelcomeView) {
+                    InfoView(welcome: true)
+                }
+            Text("")
+                .sheet(item: $vm.selectedPlace) { place in
+                    PlaceView(placeVM: .init(place: place, coord: place.coordinate))
+                }
+            Text("")
+                .sheet(item: $vm.selectedCoord) { coord in
+                    PlaceView(placeVM: .init(place: nil, coord: coord))
+                }
         }
         .environmentObject(vm)
         .navigationViewStyle(.stack)
-        .shareSheet(items: vm.shareItems, isPresented: $vm.showShareSheet)
     }
 }

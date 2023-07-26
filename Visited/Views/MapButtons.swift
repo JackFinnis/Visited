@@ -10,7 +10,6 @@ import MapKit
 
 struct MapButtons: View {
     @EnvironmentObject var vm: ViewModel
-    @State var showInfoView = false
     
     var body: some View {
         VStack(spacing: 10) {
@@ -35,39 +34,14 @@ struct MapButtons: View {
             }
             .blurBackground()
             
-            VStack(spacing: 0) {
-                Button {
-                    showInfoView = true
-                } label: {
-                    Image(systemName: "info.circle")
-                        .squareButton()
-                }
-                
-                if Set(vm.places.map(\.type)).count == PlaceType.allCases.count {
-                    Divider().frame(width: Constants.size)
-                    Menu {
-                        Picker("", selection: $vm.selectedPlaceType) {
-                            Text("All Places")
-                                .tag(nil as PlaceType?)
-                            ForEach(PlaceType.allCases, id: \.self) { type in
-                                Label {
-                                    Text(type.name)
-                                } icon: {
-                                    Image(systemName: "circle.fill", fontSize: 20, tint: type.color)
-                                }
-                                .tag(type as PlaceType?)
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle\(vm.selectedPlaceType == nil ? "" : ".fill")")
-                            .squareButton()
-                    }
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
+            Button {
+                vm.selectedCoord = vm.mapView?.centerCoordinate ?? .init()
+            } label: {
+                Image(systemName: "plus")
+                    .squareButton()
+                    .blurBackground()
             }
-            .blurBackground()
         }
-        .animation(.default, value: vm.places)
         .padding(10)
         .alert("Access Denied", isPresented: $vm.showAuthError) {
             Button("Maybe Later") {}
@@ -75,35 +49,30 @@ struct MapButtons: View {
                 vm.openSettings()
             }
         } message: {
-            Text("\(Constants.name) needs access to your location to show where you are on the map. Please go to Settings > \(Constants.name) > Location and allow access while using the app.")
-        }
-        .sheet(isPresented: $showInfoView) {
-            InfoView(welcome: false)
+            Text("\(Constants.name) needs access to your location to show where you are on the map. Please go to Settings > \(Constants.name) > Location and select \"While Using the App\".")
         }
     }
     
     func updateTrackingMode() {
-        var mode: MKUserTrackingMode {
-            switch vm.trackingMode {
-            case .none:
-                return .follow
-            case .follow:
-                return .followWithHeading
-            default:
-                return .none
-            }
+        let mode: MKUserTrackingMode
+        switch vm.trackingMode {
+        case .none:
+            mode = .follow
+        case .follow:
+            mode = .followWithHeading
+        default:
+            mode = .none
         }
         vm.setTrackingMode(mode)
     }
     
     func updateMapType() {
-        var type: MKMapType {
-            switch vm.mapType {
-            case .standard:
-                return .hybrid
-            default:
-                return .standard
-            }
+        let type: MKMapType
+        switch vm.mapType {
+        case .standard:
+            type = .hybrid
+        default:
+            type = .standard
         }
         vm.setMapType(type)
     }

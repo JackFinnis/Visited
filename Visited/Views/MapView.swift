@@ -9,15 +9,18 @@ import SwiftUI
 import MapKit
 
 class _MKMapView: MKMapView {
+    var compass: UIView? {
+        subviews.first(where: { type(of: $0).id == "MKCompassView" })
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
-        if let compass = subviews.first(where: { type(of: $0).id == "MKCompassView" }) {
-            compass.center = compass.center.applying(.init(translationX: -5, y: Constants.size*4 + 25))
-            if (compass.gestureRecognizers?.count ?? 0) < 2 {
-                let tap = UITapGestureRecognizer(target: ViewModel.shared, action: #selector(ViewModel.tappedCompass))
-                tap.delegate = ViewModel.shared
-                compass.addGestureRecognizer(tap)
-            }
+        guard let compass else { return }
+        compass.center = compass.center.applying(.init(translationX: -5, y: Constants.size*3 + 25))
+        if compass.gestureRecognizers?.count == 1 {
+            let tap = UITapGestureRecognizer(target: ViewModel.shared, action: #selector(ViewModel.tappedCompass))
+            tap.delegate = ViewModel.shared
+            compass.addGestureRecognizer(tap)
         }
     }
 }
@@ -30,9 +33,6 @@ struct MapView: UIViewRepresentable {
         mapView.delegate = vm
         vm.mapView = mapView
         
-        mapView.addAnnotations(vm.places)
-        vm.zoomTo(vm.places)
-        
         mapView.showsUserLocation = true
         mapView.showsScale = true
         mapView.showsCompass = true
@@ -40,9 +40,13 @@ struct MapView: UIViewRepresentable {
         mapView.userTrackingMode = .none
         
         mapView.register(MKPinAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKPinAnnotationView.id)
+        mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMarkerAnnotationView.id)
         
         let pressRecognizer = UILongPressGestureRecognizer(target: vm, action: #selector(ViewModel.handlePress))
         mapView.addGestureRecognizer(pressRecognizer)
+        
+        mapView.addAnnotations(vm.places)
+        vm.zoomToFilteredPlaces()
         
         return mapView
     }

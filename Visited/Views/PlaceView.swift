@@ -9,33 +9,50 @@ import SwiftUI
 import MapKit
 
 struct PlaceView: View {
+    @MainActor class PlaceVM: ObservableObject {
+        @Published var type: PlaceType
+        @Published var name: String
+        @Published var placemark: CLPlacemark?
+        var coord: CLLocationCoordinate2D
+        
+        let place: Place?
+        let initialCoord: CLLocationCoordinate2D
+        
+        var new: Bool { place == nil }
+        var valid: Bool { name.trimmed.isNotEmpty && placemark != nil }
+        var unchanged: Bool {
+            name == place?.name ?? placemark?.name ?? "" &&
+            type == place?.type ?? .visited &&
+            coord == place?.coordinate ?? initialCoord
+        }
+        
+        init(place: Place?, coord: CLLocationCoordinate2D) {
+            self.place = place
+            self.placemark = place?.placemark
+            self.initialCoord = coord
+            self.type = place?.type ?? .visited
+            self.name = place?.name ?? ""
+            self.coord = coord
+        }
+    }
+    
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var vm: ViewModel
-    @State var type = PlaceType.visited
-    @State var name = ""
-    @State var town: String?
-    @State var coord = CLLocationCoordinate2D()
     @FocusState var focused: Bool
-    
-    var new: Bool { vm.selectedPlace == nil }
-    var valid: Bool { name.trimmed.isNotEmpty || town != nil }
-    var edits: Bool {
-        name != vm.selectedPlace?.name ?? "" ||
-        type != vm.selectedPlace?.type ?? .visited ||
-        coord != vm.selectedPlace?.coordinate ?? vm.selectedCoord ?? vm.mapView?.centerCoordinate
-    }
+    @StateObject var placeVM: PlaceVM
     
     var body: some View {
         NavigationView {
             Form {
                 Section {
-                    TextField(town ?? "Name", text: $name)
+                    TextField("Name", text: $placeVM.name)
                         .focused($focused)
                         .submitLabel(.done)
+                        .padding(.trailing, 30)
                         .overlay(alignment: .trailing) {
-                            if focused && name.isNotEmpty {
+                            if focused && placeVM.name.isNotEmpty {
                                 Button {
-                                    name = ""
+                                    placeVM.name = ""
                                 } label: {
                                     Image(systemName: "xmark.circle.fill")
                                         .foregroundStyle(.secondary)
@@ -46,26 +63,25 @@ struct PlaceView: View {
                 } header: {
                     VStack(spacing: 20) {
                         ZStack {
-                            PlaceViewMap(centreCoord: $coord)
+                            PlaceViewMap(centreCoord: $placeVM.coord)
                             Image(systemName: "circle.fill")
-                                .foregroundColor(type.color)
+                                .foregroundColor(placeVM.type.color)
                                 .font(.title3)
-                                .addShadow()
+                                .shadow()
                                 .allowsHitTesting(false)
                         }
                         .aspectRatio(1, contentMode: .fit)
                         .continuousRadius(10)
-                        .addShadow()
-                        .padding(5)
+                        .shadow()
                         
-                        Picker("", selection: $type) {
+                        Picker("Place Type", selection: $placeVM.type) {
                             ForEach(PlaceType.allCases, id: \.self) { type in
                                 Text(type.name)
                             }
                         }
                         .pickerStyle(.segmented)
-                        .textCase(nil)
                     }
+                    .padding(.bottom, 10)
                 }
                 .headerProminence(.increased)
                 
@@ -80,31 +96,10 @@ struct PlaceView: View {
                     }
                 }
             }
-            .onAppear {
-                type = vm.selectedPlace?.type ?? type
-                name = vm.selectedPlace?.name ?? name
-                coord = vm.selectedPlace?.coordinate ?? vm.selectedCoord ?? vm.mapView?.centerCoordinate ?? .init()
-                if new {
-                    vm.reverseGeocode(coord: coord) { placemark in
-                        town = placemark.subLocality ?? placemark.locality ?? ""
-                    }
-                }
-            }
-            .interactiveDismissDisabled(edits && !new)
-            .navigationTitle(new ? "New Place" : "Edit Place")
+            .interactiveDismissDisabled(!placeVM.unchanged)
+            .navigationTitle(placeVM.new ? "New Place" : "Edit Place")
             .navigationBarTitleDisplayMode(.inline)
             .animation(.default, value: focused)
-            .safeAreaInset(edge: .bottom) {
-                if new && !focused {
-                    Button(action: savePin) {
-                        Text("Add Place")
-                            .bigButton()
-                    }
-                    .padding()
-                    .disabled(!valid)
-                    .textCase(nil)
-                }
-            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -112,35 +107,34 @@ struct PlaceView: View {
                     }
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    if !new {
-                        Button("Save", action: savePin)
-                            .font(.body.bold())
-                            .disabled(!valid || !edits)
-                    }
+                    Button(placeVM.new ? "Add" : "Save", action: savePin)
+                        .font(.headline)
+                        .disabled(!placeVM.valid || !placeVM.new && placeVM.unchanged)
                 }
             }
         }
-        .onDisappear {
-            vm.selectedPlace = nil
-            vm.selectedCoord = nil
+        .onAppear {
+            if placeVM.new {
+                vm.reverseGeocode(coord: placeVM.coord) { placemark in
+                    placeVM.placemark = placemark
+                    placeVM.name = placeVM.placemark?.name ?? ""
+                }
+            }
         }
     }
     
     func savePin() {
-        let place: Place
-        if let selectedPlace = vm.selectedPlace {
-            place = selectedPlace
-        } else {
-            place = Place(context: vm.container.viewContext)
-            vm.places.append(place)
-        }
-        place.name = name.isNotEmpty ? name : town ?? ""
-        place.type = type
-        place.lat = coord.latitude
-        place.long = coord.longitude
+        guard let placemark = placeVM.placemark else { return }
+        let place = placeVM.place ?? Place(context: vm.container.viewContext)
+        place.name = placeVM.name.trimmed
+        place.type = placeVM.type
+        place.lat = placeVM.coord.latitude
+        place.long = placeVM.coord.longitude
+        place.placemark = placemark
         vm.save()
-        vm.mapView?.removeAnnotation(place)
-        vm.mapView?.addAnnotation(place)
+        vm.places.removeAll(place)
+        vm.places.append(place)
+        vm.filterPlaces()
         Haptics.tap()
         dismiss()
     }
@@ -150,7 +144,7 @@ struct PlaceView_Previews: PreviewProvider {
     static var previews: some View {
         Text("")
             .sheet(isPresented: .constant(true)) {
-                PlaceView()
+                PlaceView(placeVM: .init(place: nil, coord: .init()))
                     .environmentObject(ViewModel())
             }
     }
@@ -170,8 +164,9 @@ struct PlaceViewMap: UIViewRepresentable {
         mapView.showsUserLocation = true
         mapView.isPitchEnabled = false
         mapView.isRotateEnabled = false
+        mapView.mapType = .hybrid
         
-        let spanDelta = 0.002
+        let spanDelta = 0.001
         let span = MKCoordinateSpan(latitudeDelta: spanDelta, longitudeDelta: spanDelta)
         mapView.region = MKCoordinateRegion(center: centreCoord, span: span)
         
