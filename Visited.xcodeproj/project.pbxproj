@@ -81,6 +81,8 @@
 		047BF5502A70AFA80022505C /* CLLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocationManager.swift; sourceTree = "<group>"; };
 		047BF5522A70B0270022505C /* MKAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MKAnnotation.swift; sourceTree = "<group>"; };
 		047BF5542A70B28F0022505C /* TimeZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZone.swift; sourceTree = "<group>"; };
+		047BF5562A71FABC0022505C /* Visited.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Visited.entitlements; sourceTree = "<group>"; };
+		047BF5572A71FB120022505C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		04C71F9E2A06F37800417249 /* Visited.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Visited.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04C71FA12A06F37800417249 /* VisitedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitedApp.swift; sourceTree = "<group>"; };
 		04C71FA52A06F37900417249 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -152,6 +154,8 @@
 		04C71FBA2A06F83800417249 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				047BF5562A71FABC0022505C /* Visited.entitlements */,
+				047BF5572A71FB120022505C /* Info.plist */,
 				04C71FB52A06F60100417249 /* Visited.xcdatamodeld */,
 				04C71FA52A06F37900417249 /* Assets.xcassets */,
 				04C71FE82A0725DF00417249 /* Launch Screen.storyboard */,
@@ -480,13 +484,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Visited/Resources/Visited.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = Visited/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Travel Map";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is shown on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -511,13 +516,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Visited/Resources/Visited.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = Visited/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Travel Map";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is shown on the map.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

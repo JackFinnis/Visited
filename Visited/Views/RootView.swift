@@ -66,6 +66,7 @@ struct RootView: View {
                         }
                         .sheet(isPresented: $showInfoView) {
                             InfoView(welcome: false)
+                                .environmentObject(vm)
                         }
                     }
                 }
@@ -85,14 +86,17 @@ struct RootView: View {
             Text("")
                 .sheet(isPresented: $showWelcomeView) {
                     InfoView(welcome: true)
+                        .environmentObject(vm)
                 }
             Text("")
                 .sheet(item: $vm.selectedPlace) { place in
                     PlaceView(placeVM: .init(place: place, coord: place.coordinate))
+                        .environmentObject(vm)
                 }
             Text("")
                 .sheet(item: $vm.selectedCoord) { coord in
                     PlaceView(placeVM: .init(place: nil, coord: coord))
+                        .environmentObject(vm)
                 }
         }
         .environmentObject(vm)

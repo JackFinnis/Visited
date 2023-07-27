@@ -34,13 +34,13 @@ struct MapButtons: View {
             }
             .blurBackground()
             
-            Button {
-                vm.selectedCoord = vm.mapView?.centerCoordinate ?? .init()
-            } label: {
-                Image(systemName: "plus")
-                    .squareButton()
-                    .blurBackground()
-            }
+//            Button {
+//                vm.selectedCoord = vm.mapView?.centerCoordinate ?? .init()
+//            } label: {
+//                Image(systemName: "plus")
+//                    .squareButton()
+//                    .blurBackground()
+//            }
         }
         .padding(10)
         .alert("Access Denied", isPresented: $vm.showAuthError) {

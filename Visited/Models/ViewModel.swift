@@ -17,9 +17,12 @@ class ViewModel: NSObject, ObservableObject {
     @Published var allPlaceTypes = Set<PlaceType>()
     @Published var countriesVisited = 0
     @Published var places: [Place] = [] { didSet {
-        allPlaceTypes = Set(places.map(\.type))
-        countriesVisited = Set(places.map(\.placemark.country).compactMap { $0 }).count
+        updateSummaryStats()
     }}
+    func updateSummaryStats() {
+        allPlaceTypes = Set(places.map(\.type))
+        countriesVisited = Set(places.filter(\.type.isVisited).map(\.placemark.country).compactMap { $0 }).count
+    }
     @Published var filteredPlaces: [Place] = []
     var isFiltering: Bool { placeFilter != nil || isSearching }
     @Published var placeFilter: PlaceFilter? { didSet {
@@ -46,7 +49,7 @@ class ViewModel: NSObject, ObservableObject {
     @Published var showAuthError = false
     
     // Persistence
-    let container = NSPersistentContainer(name: "Visited")
+    let container = NSPersistentCloudKitContainer(name: "Visited")
     func save() {
         try? container.viewContext.save()
     }
@@ -152,6 +155,9 @@ class ViewModel: NSObject, ObservableObject {
         }
         if isEditing && detent != .large {
             stopEditing()
+            if searchText.isEmpty {
+                stopSearching()
+            }
         }
     }
     
@@ -178,9 +184,19 @@ class ViewModel: NSObject, ObservableObject {
     
     // MARK: - Places
     func loadPlaces() {
+        CLPlacemarkTransformer.register()
+        container.viewContext.automaticallyMergesChangesFromParent = true
         container.loadPersistentStores { description, error in
             self.places = self.fetch(Place.self)
             self.filterPlaces()
+        }
+    }
+    
+    func updateCloudKitSchema() {
+        do {
+            try self.container.initializeCloudKitSchema()
+        } catch {
+            debugPrint(error)
         }
     }
     
@@ -197,7 +213,7 @@ class ViewModel: NSObject, ObservableObject {
     func filterPlaces() {
         let old = filteredPlaces
         filteredPlaces = places.filter { place in
-            let searching = place.name.localizedCaseInsensitiveContains(searchText) || searchText.isEmpty
+            let searching = searchScope == .Maps || place.name.localizedCaseInsensitiveContains(searchText) || searchText.isEmpty
             let filter: Bool
             switch placeFilter {
             case nil:
@@ -271,7 +287,7 @@ class ViewModel: NSObject, ObservableObject {
     func zoomToFilteredPlaces() {
         let coords = filteredPlaces.map(\.coordinate)
         if coords.count == 1 {
-            selectAnnotation(filteredPlaces.first!)
+            mapView?.setCenter(coords.first!, animated: true)
         } else if coords.isNotEmpty {
             setRect(MKPolyline(coordinates: coords, count: coords.count).boundingMapRect)
         }
@@ -490,11 +506,16 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func updateSearchCompletions() {
-        switch searchScope {
-        case .Places:
+        if searchText.isEmpty {
+            searchCompletions = []
             filterPlaces()
-        case .Maps:
-            fetchCompletions()
+        } else {
+            switch searchScope {
+            case .Places:
+                filterPlaces()
+            case .Maps:
+                fetchCompletions()
+            }
         }
     }
     
@@ -502,6 +523,7 @@ extension ViewModel: UISearchBarDelegate {
         isEditing = true
         isSearching = true
         setSheetDetent(.large)
+        setupSearchCompleter()
         searchBar?.becomeFirstResponder()
         searchBar?.setShowsScope(true, animated: false)
         searchBar?.setShowsCancelButton(true, animated: false)
@@ -514,12 +536,12 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func stopSearching() {
-        searchText = ""
         resetSearching()
         isSearching = false
         searchBar?.setShowsScope(false, animated: false)
         searchBar?.setShowsCancelButton(false, animated: false)
         ensureMapVisible()
+        searchText = ""
     }
     
     func stopSearchRequest() {
@@ -585,15 +607,13 @@ extension ViewModel: MKLocalSearchCompleterDelegate {
         searchCompletions = completer.results
     }
     
-    func fetchCompletions() {
+    func setupSearchCompleter() {
         guard let mapView else { return }
-        if searchText.isEmpty {
-            searchCompletions = []
-        } else {
-            searchCompleter.cancel()
-            searchCompleter.queryFragment = searchText
-            searchCompleter.region = mapView.region
-            searchCompleter.resultTypes = [.address, .pointOfInterest, .query]
-        }
+        searchCompleter.region = mapView.region
+        searchCompleter.resultTypes = [.address, .pointOfInterest, .query]
+    }
+    
+    func fetchCompletions() {
+        searchCompleter.queryFragment = searchText
     }
 }

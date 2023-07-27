@@ -12,6 +12,7 @@ import CoreData
 @objc(Place)
 class Place: NSManagedObject, Identifiable {
     @NSManaged var name: String
+    @NSManaged var date: Date?
     @NSManaged var type: PlaceType
     @NSManaged var lat: Double
     @NSManaged var long: Double
@@ -58,6 +59,10 @@ enum PlaceType: Int16, CaseIterable {
             return .orange
         }
     }
+    
+    var isVisited: Bool {
+        [PlaceType.visited, .lived].contains(self)
+    }
 }
 
 enum PlaceFilter: CaseIterable, Hashable {
@@ -87,6 +92,19 @@ enum PlaceSort: String, CaseIterable, Equatable, Codable {
     case Time
     case Distance
     case Country
+}
+
+@objc(CLPlacemarkTransformer)
+class CLPlacemarkTransformer: NSSecureUnarchiveFromDataTransformer {
+    override static var allowedTopLevelClasses: [AnyClass] {
+        [CLPlacemark.self]
+    }
+
+    static func register() {
+        let transformer = CLPlacemarkTransformer()
+        let name = NSValueTransformerName(rawValue: id)
+        ValueTransformer.setValueTransformer(transformer, forName: name)
+    }
 }
 
 //@NSCopying open var location: CLLocation? { get }

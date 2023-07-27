@@ -87,7 +87,6 @@ struct Sheet<Content: View, Header: View>: View {
             }
         }
         .transition(.move(edge: .bottom))
-        .ignoresSafeArea(.keyboard)
     }
 }
 

@@ -16,7 +16,7 @@ class _MKMapView: MKMapView {
     override func layoutSubviews() {
         super.layoutSubviews()
         guard let compass else { return }
-        compass.center = compass.center.applying(.init(translationX: -5, y: Constants.size*3 + 25))
+        compass.center = compass.center.applying(.init(translationX: -5, y: Constants.size*2 + 15))
         if compass.gestureRecognizers?.count == 1 {
             let tap = UITapGestureRecognizer(target: ViewModel.shared, action: #selector(ViewModel.tappedCompass))
             tap.delegate = ViewModel.shared
@@ -38,6 +38,9 @@ struct MapView: UIViewRepresentable {
         mapView.showsCompass = true
         mapView.isPitchEnabled = false
         mapView.userTrackingMode = .none
+        if #available(iOS 16, *) {
+            mapView.selectableMapFeatures = [.pointsOfInterest, .physicalFeatures, .territories]
+        }
         
         mapView.register(MKPinAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKPinAnnotationView.id)
         mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMarkerAnnotationView.id)

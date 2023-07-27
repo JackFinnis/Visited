@@ -9,11 +9,12 @@ import SwiftUI
 import MapKit
 
 struct PlaceView: View {
-    @MainActor class PlaceVM: ObservableObject {
+    @MainActor
+    class PlaceVM: ObservableObject {
         @Published var type: PlaceType
         @Published var name: String
         @Published var placemark: CLPlacemark?
-        var coord: CLLocationCoordinate2D
+        @Published var coord: CLLocationCoordinate2D
         
         let place: Place?
         let initialCoord: CLLocationCoordinate2D
@@ -81,7 +82,7 @@ struct PlaceView: View {
                         }
                         .pickerStyle(.segmented)
                     }
-                    .padding(.bottom, 10)
+                    .padding(.bottom)
                 }
                 .headerProminence(.increased)
                 
@@ -125,16 +126,26 @@ struct PlaceView: View {
     
     func savePin() {
         guard let placemark = placeVM.placemark else { return }
-        let place = placeVM.place ?? Place(context: vm.container.viewContext)
-        place.name = placeVM.name.trimmed
-        place.type = placeVM.type
-        place.lat = placeVM.coord.latitude
-        place.long = placeVM.coord.longitude
-        place.placemark = placemark
+        let newPlace: Place
+        if let place = placeVM.place {
+            newPlace = place
+        } else {
+            newPlace = Place(context: vm.container.viewContext)
+            vm.places.append(newPlace)
+        }
+        
+        newPlace.name = placeVM.name.trimmed
+        newPlace.type = placeVM.type
+        newPlace.lat = placeVM.coord.latitude
+        newPlace.long = placeVM.coord.longitude
+        newPlace.placemark = placemark
         vm.save()
-        vm.places.removeAll(place)
-        vm.places.append(place)
+        
+        vm.updateSummaryStats()
+        vm.filteredPlaces.removeAll(newPlace)
+        vm.mapView?.removeAnnotation(newPlace)
         vm.filterPlaces()
+        
         Haptics.tap()
         dismiss()
     }

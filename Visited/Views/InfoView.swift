@@ -12,7 +12,7 @@ struct InfoView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var vm: ViewModel
-    @State var showShareSheet = false
+    @State var showSharePopover = false
     @State var showEmailSheet = false
     
     let welcome: Bool
@@ -36,9 +36,9 @@ struct InfoView: View {
                     .padding(.bottom, 30)
                     
                     VStack(alignment: .leading, spacing: 20) {
-                        InfoRow(systemName: "globe.europe.africa.fill", title: "Remember Your Travels", description: "Browse all the places you have visited and lived.")
+                        InfoRow(systemName: "globe.europe.africa.fill", title: "Remember Your Travels", description: "Browse all the places you have visited and lived. \(welcome ? "" : "You have visited \(vm.countriesVisited) \(vm.countriesVisited == 1 ? "country" : "countries").")")
                         InfoRow(systemName: "checklist", title: "Complete Your Bucket List", description: "Keep track of where you want to visit in future.")
-                        InfoRow(systemName: "hand.tap", title: "Easily Save Places", description: "Hold down on the map to drop a pin at that location.")
+                        InfoRow(systemName: "hand.tap", title: "Easily Save Places", description: "Hold down on the map to save that place or search for an address.")
                     }
                 }
                 .padding(.horizontal)
@@ -59,7 +59,7 @@ struct InfoView: View {
                         Menu {
                             Button {
                                 if MFMailComposeViewController.canSendMail() {
-                                    showEmailSheet.toggle()
+                                    showEmailSheet = true
                                 } else if let url = Emails.url(subject: "\(Constants.name) Feedback") {
                                     UIApplication.shared.open(url)
                                 }
@@ -77,7 +77,7 @@ struct InfoView: View {
                                 Label("Rate \(Constants.name)", systemImage: "star")
                             }
                             Button {
-                                showShareSheet.toggle()
+                                showSharePopover = true
                             } label: {
                                 Label("Share \(Constants.name)", systemImage: "square.and.arrow.up")
                             }
@@ -85,7 +85,7 @@ struct InfoView: View {
                             Text("Contribute...")
                                 .bigButton()
                         }
-                        .sharePopover(items: [Constants.appUrl], showsSharedAlert: true, isPresented: $showShareSheet)
+                        .sharePopover(items: [Constants.appUrl], showsSharedAlert: true, isPresented: $showSharePopover)
                     }
                 }
                 .padding()

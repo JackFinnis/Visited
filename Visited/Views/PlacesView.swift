@@ -14,14 +14,12 @@ struct PlacesView: View {
     var body: some View {
         VStack(spacing: 0) {
             if vm.places.isEmpty {
-                BigLabel(systemName: "hand.tap", title: "No Places Yet", message: "Hold down on the map to drop a pin at that location.")
+                BigLabel(systemName: "hand.tap", title: "No Places Yet", message: "Hold down on the map to save that place or search for an address.")
                     .centred()
                     .padding(.horizontal)
             } else {
                 HStack(spacing: 15) {
-                    let places = vm.filteredPlaces.count.formatted(singular: "Place") + (vm.isFiltering ? " Found" : "")
-                    let countries = vm.countriesVisited == 1 ? "1 Country" : "\(vm.countriesVisited) Countries"
-                    Text(vm.filteredPlaces.isEmpty ? places : places + ", " + countries)
+                    Text(vm.filteredPlaces.count.formatted(singular: "Place") + (vm.isFiltering ? " Found" : ""))
                         .font(.headline)
                         .animation(.none, value: vm.filteredPlaces.count)
                         .onTapGesture {
