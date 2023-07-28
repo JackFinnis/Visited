@@ -57,14 +57,18 @@ struct InfoView: View {
                         }
                     } else {
                         Menu {
-                            Button {
-                                if MFMailComposeViewController.canSendMail() {
+                            if MFMailComposeViewController.canSendMail() {
+                                Button {
                                     showEmailSheet = true
-                                } else if let url = Emails.url(subject: "\(Constants.name) Feedback") {
-                                    UIApplication.shared.open(url)
+                                } label: {
+                                    Label("Send us Feedback", systemImage: "envelope")
                                 }
-                            } label: {
-                                Label("Send us Feedback", systemImage: "envelope")
+                            } else if let url = Emails.url(subject: "\(Constants.name) Feedback"), UIApplication.shared.canOpenURL(url) {
+                                Button {
+                                    UIApplication.shared.open(url)
+                                } label: {
+                                    Label("Send us Feedback", systemImage: "envelope")
+                                }
                             }
                             Button {
                                 Store.writeReview()
