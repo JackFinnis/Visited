@@ -9,67 +9,8 @@ import MapKit
 import SwiftUI
 
 extension MKPointOfInterestCategory {
-    func supportedIcon160(new: String, old: String) -> String {
-        if #available(iOS 16, *) {
-            return new
-        }
-        return old
-    }
-    
-    func supportedIcon161(new: String, old: String) -> String {
-        if #available(iOS 16.1, *) {
-            return new
-        }
-        return old
-    }
-    
-    static let defaultIcon = "mappin"
     static let defaultColor = Color.red
-    
-    var systemName: String {
-        switch self {
-        case .airport: return "airplane"
-        case .amusementPark: return "ticket.fill"
-        case .aquarium: return supportedIcon160(new: "fish.fill", old: "building.columns.fill")
-        case .atm: return "creditcard.fill"
-        case .bakery: return supportedIcon160(new: "birthday.cake.fill", old: "cart.fill")
-        case .bank: return "banknote.fill"
-        case .beach: return supportedIcon160(new: "beach.umbrella.fill", old: "drop.fill")
-        case .brewery: return supportedIcon161(new: "mug.fill", old: Self.defaultIcon)
-        case .cafe: return "cup.and.saucer.fill"
-        case .campground: return supportedIcon160(new: "tent.fill", old: Self.defaultIcon)
-        case .carRental: return "car.2.fill"
-        case .evCharger: return "powerplug.fill"
-        case .fireStation: return "flame.fill"
-        case .fitnessCenter: return supportedIcon160(new: "dumbbell.fill", old: "sportscourt.fill")
-        case .foodMarket: return supportedIcon160(new: "basket.fill", old: "cart.fill")
-        case .gasStation: return "fuelpump.fill"
-        case .hospital: return "cross.fill"
-        case .hotel: return "bed.double.fill"
-        case .laundry: return supportedIcon160(new: "washer.fill", old: "tshirt.fill")
-        case .library: return "books.vertical.fill"
-        case .marina: return supportedIcon160(new: "sailboat.fill", old: "ferry.fill")
-        case .movieTheater: return supportedIcon160(new: "popcorn.fill", old: "theatermasks.fill")
-        case .museum: return "building.columns.fill"
-        case .nationalPark, .park: return supportedIcon161(new: "tree.fill", old: "leaf.fill")
-        case .nightlife: return supportedIcon160(new: "figure.dance", old: "music.mic")
-        case .parking: return "parkingsign"
-        case .pharmacy: return "pills.fill"
-        case .police: return "checkerboard.shield"
-        case .postOffice: return "mail.fill"
-        case .publicTransport: return "tram.fill"
-        case .restaurant: return "fork.knife"
-        case .restroom: return supportedIcon160(new: "toilet.fill", old: Self.defaultIcon)
-        case .school: return "graduationcap.fill"
-        case .stadium: return "sportscourt.fill"
-        case .store: return "bag.fill"
-        case .theater: return "theatermasks.fill"
-        case .university: return "graduationcap.fill"
-        case .winery: return supportedIcon160(new: "wineglass.fill", old: Self.defaultIcon)
-        case .zoo: return supportedIcon160(new: "lizard.fill", old: "tortoise.fill")
-        default: return Self.defaultIcon
-        }
-    }
+    static let defaultIcon = "mappin"
     
     var color: Color {
         switch self {
@@ -98,3 +39,44 @@ extension MKPointOfInterestCategory {
         }
     }
 }
+
+//public static let airport: MKPointOfInterestCategory
+//public static let amusementPark: MKPointOfInterestCategory
+//public static let aquarium: MKPointOfInterestCategory
+//public static let atm: MKPointOfInterestCategory
+//public static let bakery: MKPointOfInterestCategory
+//public static let bank: MKPointOfInterestCategory
+//public static let beach: MKPointOfInterestCategory
+//public static let brewery: MKPointOfInterestCategory
+//public static let cafe: MKPointOfInterestCategory
+//public static let campground: MKPointOfInterestCategory
+//public static let carRental: MKPointOfInterestCategory
+//public static let evCharger: MKPointOfInterestCategory
+//public static let fireStation: MKPointOfInterestCategory
+//public static let fitnessCenter: MKPointOfInterestCategory
+//public static let foodMarket: MKPointOfInterestCategory
+//public static let gasStation: MKPointOfInterestCategory
+//public static let hospital: MKPointOfInterestCategory
+//public static let hotel: MKPointOfInterestCategory
+//public static let laundry: MKPointOfInterestCategory
+//public static let library: MKPointOfInterestCategory
+//public static let marina: MKPointOfInterestCategory
+//public static let movieTheater: MKPointOfInterestCategory
+//public static let museum: MKPointOfInterestCategory
+//public static let nationalPark: MKPointOfInterestCategory
+//public static let nightlife: MKPointOfInterestCategory
+//public static let park: MKPointOfInterestCategory
+//public static let parking: MKPointOfInterestCategory
+//public static let pharmacy: MKPointOfInterestCategory
+//public static let police: MKPointOfInterestCategory
+//public static let postOffice: MKPointOfInterestCategory
+//public static let publicTransport: MKPointOfInterestCategory
+//public static let restaurant: MKPointOfInterestCategory
+//public static let restroom: MKPointOfInterestCategory
+//public static let school: MKPointOfInterestCategory
+//public static let stadium: MKPointOfInterestCategory
+//public static let store: MKPointOfInterestCategory
+//public static let theater: MKPointOfInterestCategory
+//public static let university: MKPointOfInterestCategory
+//public static let winery: MKPointOfInterestCategory
+//public static let zoo: MKPointOfInterestCategory

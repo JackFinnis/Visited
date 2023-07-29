@@ -27,9 +27,18 @@ struct SearchResultRow: View {
                     .font(.title)
                     .foregroundColor(category?.color ?? MKPointOfInterestCategory.defaultColor)
                     .overlay {
-                        Image(systemName: category?.systemName ?? MKPointOfInterestCategory.defaultIcon)
-                            .font(.footnote)
-                            .foregroundColor(.white)
+                        Group {
+                            if let category {
+                                Image(category.rawValue)
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                            } else {
+                                Image(systemName: MKPointOfInterestCategory.defaultIcon)
+                                    .font(.subheadline)
+                            }
+                        }
+                        .foregroundColor(.white)
                     }
                     .padding(.trailing, 10)
                 VStack(alignment: .leading, spacing: 0) {

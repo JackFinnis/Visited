@@ -52,7 +52,6 @@ struct Sheet<Content: View, Header: View>: View {
                                 .onTapGesture {}
                                 .opacity((vm.getSpacerHeight(geo.size, detent: .small) - (spacerHeight + translation))/50.0)
                         }
-                        .clipped()
                     }
                 }
                 .animation(.sheet, value: translation == 0)
@@ -91,8 +90,9 @@ struct Sheet<Content: View, Header: View>: View {
 }
 
 extension Animation {
-    static let sheet = Animation.spring(response: 0.3, dampingFraction: 1)
+    static let sheet = Animation.spring(response: 0.4)
 }
+//    .spring(response: 0.3, dampingFraction: 1)
 
 enum HorizontalSizeClass: CGFloat, CaseIterable {
     case large

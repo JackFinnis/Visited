@@ -70,9 +70,7 @@ struct RootView: View {
                         }
                     }
                 }
-                .animation(.none, value: vm.isSearching)
             }
-            .animation(.sheet, value: vm.isSearching)
         }
         .task {
             if !launchedBefore {

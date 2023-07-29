@@ -24,7 +24,7 @@ class ViewModel: NSObject, ObservableObject {
         countriesVisited = Set(places.filter(\.type.isVisited).map(\.placemark.country).compactMap { $0 }).count
     }
     @Published var filteredPlaces: [Place] = []
-    var isFiltering: Bool { placeFilter != nil || isSearching }
+    var isFiltering: Bool { placeFilter != nil || searchText.isNotEmpty }
     @Published var placeFilter: PlaceFilter? { didSet {
         filterPlaces()
         zoomToFilteredPlaces()
@@ -46,7 +46,7 @@ class ViewModel: NSObject, ObservableObject {
     // CLLocationManager
     let locationManager = CLLocationManager.shared
     var authStatus = CLAuthorizationStatus.notDetermined
-    @Published var showAuthError = false
+    @Published var showAuthAlert = false
     
     // Persistence
     let container = NSPersistentCloudKitContainer(name: "Visited")
@@ -402,7 +402,7 @@ extension ViewModel: MKMapViewDelegate {
             marker?.canShowCallout = true
             marker?.rightCalloutAccessoryView = getButton(systemName: "plus")
             if let category = result.pointOfInterestCategory {
-                marker?.glyphImage = UIImage(systemName: category.systemName)
+                marker?.glyphImage = UIImage(named: category.rawValue)
                 marker?.markerTintColor = UIColor(category.color)
             }
             return marker
@@ -438,8 +438,8 @@ extension ViewModel: CLLocationManagerDelegate {
     }
     
     @discardableResult func validateAuth() -> Bool {
-        showAuthError = authStatus == .denied
-        return !showAuthError
+        showAuthAlert = authStatus == .denied
+        return !showAuthAlert
     }
 }
 
@@ -482,7 +482,7 @@ extension ViewModel: UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        withAnimation(.sheet) {
+        withAnimation(.spring(response: 0.25, dampingFraction: 1)) {
             searchScope = SearchScope.allCases[selectedScope]
         }
         startEditing()

@@ -12,38 +12,28 @@ struct MapButtons: View {
     @EnvironmentObject var vm: ViewModel
     
     var body: some View {
-        VStack(spacing: 10) {
-            VStack(spacing: 0) {
-                Button {
-                    updateMapType()
-                } label: {
-                    Image(systemName: mapTypeImage)
-                        .squareButton()
-                        .rotation3DEffect(.degrees(vm.mapType == .standard ? 0 : 180), axis: (x: 0, y: 1, z: 0))
-                        .rotation3DEffect(.degrees(vm.degrees), axis: (x: 0, y: 1, z: 0))
-                }
-                
-                Divider().frame(width: Constants.size)
-                Button {
-                    updateTrackingMode()
-                } label: {
-                    Image(systemName: trackingModeImage)
-                        .scaleEffect(vm.scale)
-                        .squareButton()
-                }
+        VStack(spacing: 0) {
+            Button {
+                updateMapType()
+            } label: {
+                Image(systemName: mapTypeImage)
+                    .squareButton()
+                    .rotation3DEffect(.degrees(vm.mapType == .standard ? 0 : 180), axis: (x: 0, y: 1, z: 0))
+                    .rotation3DEffect(.degrees(vm.degrees), axis: (x: 0, y: 1, z: 0))
             }
-            .blurBackground()
             
-//            Button {
-//                vm.selectedCoord = vm.mapView?.centerCoordinate ?? .init()
-//            } label: {
-//                Image(systemName: "plus")
-//                    .squareButton()
-//                    .blurBackground()
-//            }
+            Divider().frame(width: Constants.size)
+            Button {
+                updateTrackingMode()
+            } label: {
+                Image(systemName: trackingModeImage)
+                    .scaleEffect(vm.scale)
+                    .squareButton()
+            }
         }
+        .blurBackground()
         .padding(10)
-        .alert("Access Denied", isPresented: $vm.showAuthError) {
+        .alert("Access Denied", isPresented: $vm.showAuthAlert) {
             Button("Maybe Later") {}
             Button("Settings", role: .cancel) {
                 vm.openSettings()
