@@ -26,7 +26,7 @@ struct InfoView: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 70, height: 70)
-                            .continuousRadius(15)
+                            .continuousRadius(70 * 0.2237)
                             .shadow()
                         Text(Constants.name)
                             .font(.largeTitle.bold())
@@ -59,7 +59,7 @@ struct InfoView: View {
                         Menu {
                             if MFMailComposeViewController.canSendMail() {
                                 Button {
-                                    showEmailSheet = true
+                                    showEmailSheet.toggle()
                                 } label: {
                                     Label("Send us Feedback", systemImage: "envelope")
                                 }
@@ -81,7 +81,7 @@ struct InfoView: View {
                                 Label("Rate \(Constants.name)", systemImage: "star")
                             }
                             Button {
-                                showSharePopover = true
+                                showSharePopover.toggle()
                             } label: {
                                 Label("Share \(Constants.name)", systemImage: "square.and.arrow.up")
                             }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RootView: View {
     @Environment(\.scenePhase) var scenePhase
-    @AppStorage("launchedBefore") var launchedBefore = false
+    @AppStorage("firstLaunch") var firstLaunch = false
     @StateObject var vm = ViewModel.shared
     @State var showWelcomeView = false
     @State var showInfoView = false
@@ -59,7 +59,7 @@ struct RootView: View {
                     
                     if !vm.isSearching {
                         Button {
-                            showInfoView = true
+                            showInfoView.toggle()
                         } label: {
                             Image(systemName: "info.circle")
                                 .font(.icon)
@@ -73,8 +73,8 @@ struct RootView: View {
             }
         }
         .task {
-            if !launchedBefore {
-                launchedBefore = true
+            if firstLaunch {
+                firstLaunch = false
                 showWelcomeView = true
             } else if vm.authStatus == .notDetermined {
                 vm.requestLocationAuthorization()

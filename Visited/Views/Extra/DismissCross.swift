@@ -11,6 +11,7 @@ struct DismissCross: View {
     var body: some View {
         Image(systemName: "xmark.circle.fill")
             .foregroundStyle(.secondary, Color(.tertiarySystemFill))
+            .imageScale(.large)
             .font(.title2)
     }
 }
