@@ -37,7 +37,6 @@ struct MapView: UIViewRepresentable {
         mapView.showsScale = true
         mapView.showsCompass = true
         mapView.isPitchEnabled = false
-        mapView.userTrackingMode = .none
         if #available(iOS 16, *) {
             mapView.selectableMapFeatures = [.pointsOfInterest, .physicalFeatures, .territories]
         }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RootView: View {
     @Environment(\.scenePhase) var scenePhase
-    @AppStorage("firstLaunch") var firstLaunch = false
+    @AppStorage("firstLaunch") var firstLaunch = true
     @StateObject var vm = ViewModel.shared
     @State var showWelcomeView = false
     @State var showInfoView = false

@@ -90,9 +90,8 @@ struct Sheet<Content: View, Header: View>: View {
 }
 
 extension Animation {
-    static let sheet = Animation.spring(response: 0.4)
+    static let sheet = Animation.spring(response: 0.3, dampingFraction: 1)
 }
-//    .spring(response: 0.3, dampingFraction: 1)
 
 enum HorizontalSizeClass: CGFloat, CaseIterable {
     case large
