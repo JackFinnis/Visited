@@ -141,7 +141,6 @@
 		04C71FA02A06F37800417249 /* Visited */ = {
 			isa = PBXGroup;
 			children = (
-				04C71FA12A06F37800417249 /* VisitedApp.swift */,
 				04C71FBE2A06F85E00417249 /* Views */,
 				04C71FBD2A06F85400417249 /* Models */,
 				04C71FD62A07018E00417249 /* Helpers */,
@@ -176,6 +175,7 @@
 		04C71FBE2A06F85E00417249 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				04C71FA12A06F37800417249 /* VisitedApp.swift */,
 				04C71FAF2A06F39900417249 /* RootView.swift */,
 				04C71FB82A06F82600417249 /* MapView.swift */,
 				04C71FD22A06FEC300417249 /* MapButtons.swift */,
